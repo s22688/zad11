@@ -1,0 +1,44 @@
+﻿@page "/students/{ID:int}"
+@inject NavigationManager navigationManager
+@inject cw11.Data.Services.IStudentService StudentService
+@using cw11.Data.Models
+
+
+<h3>Student Details</h3>
+<table>
+    <tbody>
+         <tr>
+             <td>
+                <p>ID = @ID</p>
+                <p>FirstName = @student.FirstName</p>
+                <p>LastName = @student.LastName</p>
+                <p>BirthDate = @student.BirthDate</p>
+                <p>Studies = @student.Studies</p>
+             </td>
+             <td>
+                 <p><img src=@student.Avatar alt="@student.FirstName @student.LastName avatar" width="300" height="271"/></p>
+                 <p>Avatar = @student.Avatar</p>
+             </td>
+          </tr>
+     </tbody>
+</table>
+ <button @onclick="@(() => GoBackToStudentsnPage())">Go Back</button>
+
+@code {
+    [Parameter]
+    public int ID { get; set; }
+
+    [Parameter]
+    public Student student { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        student = StudentService.GetStudent(ID);
+    }
+
+     private void GoBackToStudentsnPage()
+    {
+        navigationManager.NavigateTo($"/students");
+    }
+}

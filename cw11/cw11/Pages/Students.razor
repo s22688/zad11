@@ -1,0 +1,62 @@
+﻿@page "/students"
+@inject cw11.Data.Services.IStudentService StudentService
+@inject IJSRuntime js
+@inject NavigationManager navigationManager
+@using cw11.Data.Models
+
+<h3>Students</h3>
+<table>
+    <thead>
+        <th @onclick = "(() => onStudentClick(1))">Avatar</th>
+        <th @onclick = "(() => onStudentClick(2))">First name</th>
+        <th @onclick = "(() => onStudentClick(3))">Last name</th>
+        <th @onclick = "(() => onStudentClick(4))">Birthdate</th>
+        <th @onclick = "(() => onStudentClick(5))">Studies</th>
+        <th>Actions</th>
+    </thead>
+    <tbody>
+        @foreach (var stud in StudentsList)
+        {
+        <tr>
+            <td><img src=@stud.Avatar alt="@stud.FirstName @stud.LastName avatar" width="80" height="71"/></td>
+            <td>@stud.FirstName</td>
+            <td>@stud.LastName</td>
+            <td>@stud.BirthDate</td>
+            <td>@stud.Studies</td>
+            <td>
+                <button @onclick="@(() => OpenDetails(stud.IdStudent))">Open details</button>
+                <button @onclick="@(() => Delete(stud.IdStudent))">Delete</button>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    public IEnumerable<Student> StudentsList { get; set; }
+
+    protected override void OnInitialized()
+    {
+        StudentsList = StudentService.GetStudents();
+    }
+
+    private void OpenDetails(int id)
+    {
+        navigationManager.NavigateTo($"/students/{id}");
+    }
+
+    private async Task Delete (int id)
+    {
+        if(await js.InvokeAsync<bool>("confirm", "Are you sure?"))
+        {
+            StudentService.DeleteStudent(id);
+        }
+    }
+
+    private void onStudentClick(int kolumna)
+    {
+        StudentService.SortStudent(kolumna);
+        this.OnInitialized();
+    }
+}
